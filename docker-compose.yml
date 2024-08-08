@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  solr:
+    image: ravi8881/solr-compile-code-app-image:latest
+    container_name: solr
+    ports:
+      - "8983:8983"
+    networks:
+      - my_network
+
+  rating-app:
+    image: ravi88881/my-ratting-app-image:latest
+    container_name: rating-app
+    depends_on:
+      - solr
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+    environment:
+      - SOLR_HOST=solr
+      - SOLR_PORT=8983
+
+  graphql-app:
+    image: ravi8881/my-graphql-code-app-image:latest
+    container_name: graphql-app
+    depends_on:
+      - rating-app
+    ports:
+      - "8082:8082"
+    networks:
+      - my_network
+    environment:
+      - RATING_APP_HOST=rating-app
+      - RATING_APP_PORT=8080
+
+networks:
+  my_network:
+    driver: bridge
